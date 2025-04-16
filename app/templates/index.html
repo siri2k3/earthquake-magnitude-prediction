@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Earthquake Magnitude Prediction</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Earthquake Magnitude Prediction</h1>
+        <form id="prediction-form">
+            <label for="latitude">Latitude:</label>
+            <input type="number" step="any" id="latitude" name="latitude" placeholder="Enter latitude" required>
+
+            <label for="longitude">Longitude:</label>
+            <input type="number" step="any" id="longitude" name="longitude" placeholder="Enter longitude" required>
+
+            <label for="depth">Depth (km):</label>
+            <input type="number" step="any" id="depth" name="depth" placeholder="Enter depth" required>
+
+            <label for="year">Year:</label>
+            <input type="number" id="year" name="year" placeholder="Enter year" required>
+
+            <button type="submit">Predict</button>
+            <div id="loading-spinner" style="display: none;">Loading...</div>
+            <div id="error-messages" style="color: red; margin-top: 10px; display: none;"></div>
+        </form>
+
+        <div id="result-container" style="display: none; margin-top: 20px;">
+            <h2>Prediction Results</h2>
+            <p><strong>Latitude:</strong> <span id="result-latitude"></span></p>
+            <p><strong>Longitude:</strong> <span id="result-longitude"></span></p>
+            <p><strong>Depth:</strong> <span id="result-depth"></span> km</p>
+            <p><strong>Year:</strong> <span id="result-year"></span></p>
+            <h3>Predicted Magnitude: <span id="predicted-magnitude"></span></h3>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('prediction-form').addEventListener('submit', async function (event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const spinner = document.getElementById('loading-spinner');
+            spinner.style.display = 'block'; // Show spinner
+
+            // Clear previous error messages
+            const errorMessagesDiv = document.getElementById('error-messages');
+            errorMessagesDiv.style.display = 'none';
+            errorMessagesDiv.innerHTML = '';
+
+            // Form validation
+            const latitude = parseFloat(document.getElementById('latitude').value);
+            const longitude = parseFloat(document.getElementById('longitude').value);
+            const depth = parseFloat(document.getElementById('depth').value);
+            const year = parseInt(document.getElementById('year').value, 10);
+
+            let errorMsg = '';
+            if (isNaN(latitude) || latitude < -90 || latitude > 90) {
+                errorMsg += '<p>Latitude must be between -90 and 90.</p>';
+            }
+            if (isNaN(longitude) || longitude < -180 || longitude > 180) {
+                errorMsg += '<p>Longitude must be between -180 and 180.</p>';
+            }
+            if (isNaN(depth) || depth < 0) {
+                errorMsg += '<p>Depth must be a non-negative number.</p>';
+            }
+            if (!Number.isInteger(year) || isNaN(year)) {
+                errorMsg += '<p>Year must be a valid integer.</p>';
+            }
+
+            if (errorMsg) {
+                errorMessagesDiv.innerHTML = errorMsg;
+                errorMessagesDiv.style.display = 'block';
+                spinner.style.display = 'none'; // Hide spinner
+                return;
+            }
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ latitude, longitude, depth, year })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+
+                // Populate result details
+                document.getElementById('result-latitude').textContent = latitude;
+                document.getElementById('result-longitude').textContent = longitude;
+                document.getElementById('result-depth').textContent = depth;
+                document.getElementById('result-year').textContent = year;
+                document.getElementById('predicted-magnitude').textContent = data.predicted_magnitude;
+
+                document.getElementById('result-container').style.display = 'block';
+            } catch (error) {
+                console.error('Error:', error);
+                errorMessagesDiv.innerHTML = '<p>Failed to predict magnitude. Please try again.</p>';
+                errorMessagesDiv.style.display = 'block';
+            } finally {
+                spinner.style.display = 'none'; // Hide spinner
+            }
+        });
+    </script>
+</body>
+
+</html>
