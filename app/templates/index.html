@@ -10,49 +10,72 @@
 </head>
 
 <body>
-    <div class="container">
-        <h1>Earthquake Magnitude Prediction</h1>
-        <form id="prediction-form">
-            <label for="latitude">Latitude:</label>
-            <input type="number" step="any" id="latitude" name="latitude" placeholder="Enter latitude" required>
+    <!-- Welcome Section -->
+    <section class="welcome-section">
+        
+        <img src="{{ url_for('static', filename='mlr_logo.png') }}" alt="MLR Logo" class="welcome-logo">
+        <h1 class="welcome-title">Welcome to MLR Institute of Technology</h1>
+        <h2 class="welcome-subtitle">Earthquake Magnitude Predictor</h2>
+        <p class="welcome-text">Use this tool to predict the magnitude of an earthquake based on geographical and geological parameters.</p>
+        <button class="scroll-button" onclick="document.getElementById('form-section').scrollIntoView({ behavior: 'smooth' });">Start Prediction</button>
+    </section>
 
-            <label for="longitude">Longitude:</label>
-            <input type="number" step="any" id="longitude" name="longitude" placeholder="Enter longitude" required>
+    <!-- Form Section -->
+    <section id="form-section">
+        <header class="header">
+            
+            <img src="{{ url_for('static', filename='mlr_logo.png') }}" alt="MLR Logo" class="logo">
+            <h1 class="site-title">MLR Institute of Technology<br>Earthquake Magnitude Predictor</h1>
+        </header>
+        
+        <div class="container">
+            
+            <form id="prediction-form">
+                <label for="latitude">Latitude:</label>
+                <input type="number" step="any" id="latitude" name="latitude" placeholder="Enter latitude" required>
 
-            <label for="depth">Depth (km):</label>
-            <input type="number" step="any" id="depth" name="depth" placeholder="Enter depth" required>
+                <label for="longitude">Longitude:</label>
+                <input type="number" step="any" id="longitude" name="longitude" placeholder="Enter longitude" required>
 
-            <label for="year">Year:</label>
-            <input type="number" id="year" name="year" placeholder="Enter year" required>
+                <label for="depth">Depth (km):</label>
+                <input type="number" step="any" id="depth" name="depth" placeholder="Enter depth" required>
 
-            <button type="submit">Predict</button>
-            <div id="loading-spinner" style="display: none;">Loading...</div>
-            <div id="error-messages" style="color: red; margin-top: 10px; display: none;"></div>
-        </form>
+                <label for="year">Year:</label>
+                <input type="number" id="year" name="year" placeholder="Enter year" required>
 
-        <div id="result-container" style="display: none; margin-top: 20px;">
-            <h2>Prediction Results</h2>
-            <p><strong>Latitude:</strong> <span id="result-latitude"></span></p>
-            <p><strong>Longitude:</strong> <span id="result-longitude"></span></p>
-            <p><strong>Depth:</strong> <span id="result-depth"></span> km</p>
-            <p><strong>Year:</strong> <span id="result-year"></span></p>
-            <h3>Predicted Magnitude: <span id="predicted-magnitude"></span></h3>
+                <button type="submit">Predict</button>
+                <div id="loading-spinner" style="display: none;">Loading...</div>
+                <div id="error-messages" style="color: red; margin-top: 10px; display: none;"></div>
+            </form>
+            <a href="https://colab.research.google.com/drive/1p91_sTPGlREo80crzebP8buIhvsvuAdY?usp=sharing" target="_blank">
+                <button class="scroll-button" style="margin-top: 10px; background-color: #4CAF50;">Open Notebook</button>
+            </a>
+            <div id="result-container" style="display: none; margin-top: 20px;">
+                <h2>Prediction Results</h2>
+                <p><strong>Latitude:</strong> <span id="result-latitude"></span></p>
+                <p><strong>Longitude:</strong> <span id="result-longitude"></span></p>
+                <p><strong>Depth:</strong> <span id="result-depth"></span> km</p>
+                <p><strong>Year:</strong> <span id="result-year"></span></p>
+                <h3>Predicted Magnitude: <span id="predicted-magnitude"></span></h3>
+            </div>
         </div>
-    </div>
+    </section>
+
+    <footer class="footer">
+        <p>🌐 www.mlrinstitutions.ac.in | 📧 info@mlrinstitutions.ac.in | 📍 MLRIT, Dundigal, Hyderabad</p>
+    </footer>
 
     <script>
         document.getElementById('prediction-form').addEventListener('submit', async function (event) {
-            event.preventDefault(); // Prevent default form submission
+            event.preventDefault();
 
             const spinner = document.getElementById('loading-spinner');
-            spinner.style.display = 'block'; // Show spinner
+            spinner.style.display = 'block';
 
-            // Clear previous error messages
             const errorMessagesDiv = document.getElementById('error-messages');
             errorMessagesDiv.style.display = 'none';
             errorMessagesDiv.innerHTML = '';
 
-            // Form validation
             const latitude = parseFloat(document.getElementById('latitude').value);
             const longitude = parseFloat(document.getElementById('longitude').value);
             const depth = parseFloat(document.getElementById('depth').value);
@@ -75,7 +98,7 @@
             if (errorMsg) {
                 errorMessagesDiv.innerHTML = errorMsg;
                 errorMessagesDiv.style.display = 'block';
-                spinner.style.display = 'none'; // Hide spinner
+                spinner.style.display = 'none';
                 return;
             }
 
@@ -93,8 +116,6 @@
                 }
 
                 const data = await response.json();
-
-                // Populate result details
                 document.getElementById('result-latitude').textContent = latitude;
                 document.getElementById('result-longitude').textContent = longitude;
                 document.getElementById('result-depth').textContent = depth;
@@ -107,7 +128,7 @@
                 errorMessagesDiv.innerHTML = '<p>Failed to predict magnitude. Please try again.</p>';
                 errorMessagesDiv.style.display = 'block';
             } finally {
-                spinner.style.display = 'none'; // Hide spinner
+                spinner.style.display = 'none';
             }
         });
     </script>
