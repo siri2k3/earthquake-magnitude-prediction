@@ -214,3 +214,4 @@ year: int = int(input("Enter year: "))
 
 predicted_magnitude: float = predict_magnitude(latitude, longitude, depth, year, model)
 print('Predicted Magnitude:', predicted_magnitude)
+print("hi")
